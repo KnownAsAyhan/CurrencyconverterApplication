@@ -1,5 +1,6 @@
 package com.example.currencyconverter.controller;
 
+import com.example.currencyconverter.dto.ConvertRequest;
 import com.example.currencyconverter.exception.ResourceNotFoundException;
 import com.example.currencyconverter.model.CurrencyPair;
 import com.example.currencyconverter.model.ExchangeRate;
@@ -7,6 +8,7 @@ import com.example.currencyconverter.repository.CurrencyPairRepository;
 import com.example.currencyconverter.repository.ExchangeRateRepository;
 import com.example.currencyconverter.service.ExcelExportService;
 import com.example.currencyconverter.service.ExchangeRateService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,14 +29,16 @@ public class CurrencyController {
     private final ExcelExportService excelExportService;
 
     @PostMapping("/currencies")
-    public ResponseEntity<String> convertCurrency(@RequestParam String base,
-                                                  @RequestParam String target,
-                                                  @RequestParam double amount) {
-        double rate = exchangeRateService.fetchAndSaveRate(base, target);
-        double result = rate * amount;
-        String response = String.format("%.2f %s → %s = %.2f %s", amount, base, target, result, target);
+    public ResponseEntity<String> convertCurrency(@Valid @RequestBody ConvertRequest request) {
+        double rate = exchangeRateService.fetchAndSaveRate(request.getBase(), request.getTarget());
+        double result = rate * request.getAmount();
+
+        String response = String.format("%.2f %s → %s = %.2f %s",
+                request.getAmount(), request.getBase(), request.getTarget(), result, request.getTarget());
+
         return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/rates")
     public ResponseEntity<List<ExchangeRate>> getAllRates() {
