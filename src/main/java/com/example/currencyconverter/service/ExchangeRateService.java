@@ -50,6 +50,7 @@ public class ExchangeRateService {
                     return currencyPairRepository.save(newPair);
                 });
 
+
         // 4. Save exchange rate
         ExchangeRate exchangeRate = new ExchangeRate();
         exchangeRate.setCurrencyPair(pair);
