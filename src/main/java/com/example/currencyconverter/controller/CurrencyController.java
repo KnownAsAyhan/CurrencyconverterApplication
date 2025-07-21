@@ -1,5 +1,6 @@
 package com.example.currencyconverter.controller;
 
+import com.example.currencyconverter.exception.ResourceNotFoundException;
 import com.example.currencyconverter.model.CurrencyPair;
 import com.example.currencyconverter.model.ExchangeRate;
 import com.example.currencyconverter.repository.CurrencyPairRepository;
@@ -45,7 +46,7 @@ public class CurrencyController {
                                                 @RequestParam String target) {
         CurrencyPair pair = currencyPairRepository
                 .findByBaseCurrencyAndTargetCurrency(base, target)
-                .orElseThrow(() -> new RuntimeException("Currency pair not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Currency pair not found"));
 
         try (InputStream inputStream = excelExportService.exportRatesToExcel(pair)) {
             byte[] bytes = inputStream.readAllBytes();
